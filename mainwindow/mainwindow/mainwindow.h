@@ -4,7 +4,16 @@
 #include <QMainWindow>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QtGui/QButtonGroup>
 #include <iostream>
+
+
+#include "imagefilter.h"
+#include "imagefilter_hash.h"
+#include "imagefilter_hash_face.h"
+#include "imagefilter_alignment_face.h"
+
+
 extern QStringList fileNames;
 using namespace std;
 extern vector<double> computeSimilarity_PSNR();
@@ -36,10 +45,16 @@ private:
     std::string getFileName(std::string path);
     void showOnePic(QString path, int nIndex);
     void showOneRes(QString path, int nIndex);
+	QPixmap getPicFromFile(std::string path);
     QAction *openAction;
-    QListWidget *m_pListWidget;
+	QButtonGroup* qButtonGroup;
     int iconWidth;
     int iconHeight;
+
+	std::string getFilterType();
+	ImageFilterHash imagefilter_hash;
+	FaceImageFilter imagefilter_hash_face;
+	ImageFilterAlignmentFace imagefilter_alignment;
 };
 
 #endif // MAINWINDOW_H

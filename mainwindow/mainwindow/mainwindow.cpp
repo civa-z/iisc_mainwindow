@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QAction>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,10 +25,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->resWidget->setViewMode(QListView::IconMode);
     ui->resWidget->setMovement(QListView::Static);
     ui->resWidget->setSpacing(10);
+
+	qButtonGroup = new QButtonGroup(this);
+	qButtonGroup->addButton(ui->radioButton_Scene, 1);
+    qButtonGroup->addButton(ui->radioButton_Face, 2);
+    qButtonGroup->addButton(ui->radioButton_Alignment, 3);
 }
 
 MainWindow::~MainWindow()
 {
+	delete qButtonGroup;
     delete ui;
 }
 
@@ -52,10 +59,34 @@ void MainWindow::on_openButton_clicked()
     }
 }
 
+QPixmap MainWindow::getPicFromFile(std::string path){
+	cv::Mat mat = cv::imread(path);
+	QImage qimg;
+	cv::Mat rgb;
+	if(mat.channels() == 3)    // RGB image  
+	{  
+		cv::cvtColor(mat,rgb,CV_BGR2RGB);  
+		qimg = QImage((const uchar*)(rgb.data),  //(const unsigned char*)  
+						rgb.cols,rgb.rows,  
+						rgb.cols*rgb.channels(),   //new add  
+						QImage::Format_RGB888);  
+	}else                     // gray image  
+	{  
+		qimg = QImage((const uchar*)(mat.data),  
+						mat.cols, mat.rows,  
+						mat.cols * mat.channels(),    //new add  
+						QImage::Format_Indexed8);  
+	}
+	QPixmap img = QPixmap::fromImage(qimg);
+	return img;
+}
+
 /*Display one pic to front-end*/
 void MainWindow::showOnePic(QString path, int nIndex) {
-    QPixmap img(path);
-    double ratio = std::max(img.width(), img.height()) / (iconWidth);
+    //QPixmap img(path);
+	QPixmap img = getPicFromFile(path.toStdString());
+	std::cout<<"Path:"<<path.toStdString()<<std::endl<<std::flush;
+    double ratio = max(img.width(), img.height()) / (iconWidth);
     int itemWidth = img.width() / ratio;
     int itemHeight = img.height() / ratio;
 
@@ -70,8 +101,9 @@ void MainWindow::showOnePic(QString path, int nIndex) {
 }
 /*Display one result to front-end*/
 void MainWindow::showOneRes(QString path, int nIndex) {
-    QPixmap img(path);
-    double ratio = std::max(img.width(), img.height()) / (iconWidth);
+    //QPixmap img(path);
+	QPixmap img = getPicFromFile(path.toStdString());
+    double ratio = max(img.width(), img.height()) / (iconWidth);
     int itemWidth = img.width() / ratio;
     int itemHeight = img.height() / ratio;
 
@@ -97,9 +129,42 @@ string MainWindow::getFileName(string path) {
     return path.substr(begin + 1, end - begin - 1);
 }
 
+std::string MainWindow::getFilterType(){
+	if (ui->radioButton_Scene->isChecked())
+		return "Scene";
+	if (ui->radioButton_Face->isChecked())
+		return "Face";
+	if (ui->radioButton_Alignment->isChecked())
+		return "Alignment";
+	return "Other";
+}
+
 void MainWindow::on_computeButton_clicked()
 {
-    vector<vector<double>> similarity = computeSimilarity_HASH();
+	ui->resWidget->clear();
+	string filterType = getFilterType();
+	std::vector<std::string> fileList;
+	for (int i = 0; i < fileNames.size(); ++i) {
+		fileList.push_back(fileNames[i].toStdString());
+	}
+	if (fileList.size() == 0)
+		return;
+
+	vector<vector<double>> similarity;
+	std::cout<<"filterType: "<<filterType<<std::endl<<std::fflush;
+	if (filterType.compare("Face") == 0){
+		std::cout<<std::endl<<"Start Face"<<std::endl<<std::fflush;
+		imagefilter_hash_face.loadFaceRecognizer(".\\data\\FA\\");
+		imagefilter_hash_face.setFileList(fileList);
+		similarity = imagefilter_hash_face.computeSimilarity();
+	} else if (filterType.compare("Alignment") == 0){
+		imagefilter_alignment.loadFaceRecognizer(".\\data\\FA\\");
+		imagefilter_alignment.setFileList(fileList);
+		similarity = imagefilter_alignment.computeSimilarity();
+	} else {
+		similarity = computeSimilarity_HASH();
+	}
+
     int nIndex = 0;
     vector<int> result = getPictures(similarity);
     for (int i = 0; i < result.size(); ++i) {

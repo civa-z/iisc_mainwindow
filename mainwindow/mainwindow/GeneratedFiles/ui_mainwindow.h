@@ -14,12 +14,14 @@
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
 #include <QtGui/QGridLayout>
+#include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QListWidget>
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
+#include <QtGui/QRadioButton>
 #include <QtGui/QToolBar>
 #include <QtGui/QWidget>
 
@@ -31,12 +33,17 @@ public:
     QWidget *centralWidget;
     QGridLayout *gridLayout_3;
     QGridLayout *gridLayout_2;
+    QHBoxLayout *horizontalLayout;
+    QRadioButton *radioButton_Scene;
+    QRadioButton *radioButton_Face;
     QPushButton *openButton;
     QPushButton *computeButton;
     QLabel *label;
     QListWidget *imgWidget;
     QLabel *label_2;
     QListWidget *resWidget;
+    QHBoxLayout *horizontalLayout_2;
+    QRadioButton *radioButton_Alignment;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
 
@@ -55,35 +62,63 @@ public:
         gridLayout_2->setSpacing(6);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         gridLayout_2->setSizeConstraint(QLayout::SetDefaultConstraint);
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        radioButton_Scene = new QRadioButton(centralWidget);
+        radioButton_Scene->setObjectName(QString::fromUtf8("radioButton_Scene"));
+        radioButton_Scene->setChecked(true);
+
+        horizontalLayout->addWidget(radioButton_Scene);
+
+        radioButton_Face = new QRadioButton(centralWidget);
+        radioButton_Face->setObjectName(QString::fromUtf8("radioButton_Face"));
+
+        horizontalLayout->addWidget(radioButton_Face);
+
+
+        gridLayout_2->addLayout(horizontalLayout, 0, 0, 1, 1);
+
         openButton = new QPushButton(centralWidget);
         openButton->setObjectName(QString::fromUtf8("openButton"));
 
-        gridLayout_2->addWidget(openButton, 0, 0, 1, 1);
+        gridLayout_2->addWidget(openButton, 1, 0, 1, 1);
 
         computeButton = new QPushButton(centralWidget);
         computeButton->setObjectName(QString::fromUtf8("computeButton"));
 
-        gridLayout_2->addWidget(computeButton, 0, 1, 1, 1);
+        gridLayout_2->addWidget(computeButton, 1, 1, 1, 1);
 
         label = new QLabel(centralWidget);
         label->setObjectName(QString::fromUtf8("label"));
 
-        gridLayout_2->addWidget(label, 1, 0, 1, 1);
+        gridLayout_2->addWidget(label, 2, 0, 1, 1);
 
         imgWidget = new QListWidget(centralWidget);
         imgWidget->setObjectName(QString::fromUtf8("imgWidget"));
 
-        gridLayout_2->addWidget(imgWidget, 2, 0, 1, 1);
+        gridLayout_2->addWidget(imgWidget, 3, 0, 1, 1);
 
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QString::fromUtf8("label_2"));
 
-        gridLayout_2->addWidget(label_2, 1, 1, 1, 1);
+        gridLayout_2->addWidget(label_2, 2, 1, 1, 1);
 
         resWidget = new QListWidget(centralWidget);
         resWidget->setObjectName(QString::fromUtf8("resWidget"));
 
-        gridLayout_2->addWidget(resWidget, 2, 1, 1, 1);
+        gridLayout_2->addWidget(resWidget, 3, 1, 1, 1);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        radioButton_Alignment = new QRadioButton(centralWidget);
+        radioButton_Alignment->setObjectName(QString::fromUtf8("radioButton_Alignment"));
+
+        horizontalLayout_2->addWidget(radioButton_Alignment);
+
+
+        gridLayout_2->addLayout(horizontalLayout_2, 0, 1, 1, 1);
 
 
         gridLayout_3->addLayout(gridLayout_2, 0, 0, 1, 1);
@@ -105,10 +140,13 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
+        radioButton_Scene->setText(QApplication::translate("MainWindow", "Scene", 0, QApplication::UnicodeUTF8));
+        radioButton_Face->setText(QApplication::translate("MainWindow", "Face", 0, QApplication::UnicodeUTF8));
         openButton->setText(QApplication::translate("MainWindow", "Open", 0, QApplication::UnicodeUTF8));
         computeButton->setText(QApplication::translate("MainWindow", "Compute", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("MainWindow", "Selected Files", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("MainWindow", "Result", 0, QApplication::UnicodeUTF8));
+        radioButton_Alignment->setText(QApplication::translate("MainWindow", "Alignment", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
